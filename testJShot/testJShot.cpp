@@ -11,8 +11,8 @@
 #include <conio.h>
 
 #include <time.h> 
-#include "jDll.h"
-#include "CJThreadPool.h"
+#include "../jShot/src/jDll.h"
+#include "../JThreadPool/src/CJThreadPool.h"
 
 
 #define Y_MAX_HEIGHT 1080

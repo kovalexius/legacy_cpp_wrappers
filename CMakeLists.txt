@@ -14,6 +14,8 @@ set(JSHOT
 		jShot/src/LibJpeg.h
 		jShot/src/LibJpeg1.h)
 		
+include_directories(./jpeg-9b)
+		
 add_library(jShot SHARED ${JSHOT})
 
 set (JTHREADPOOL 

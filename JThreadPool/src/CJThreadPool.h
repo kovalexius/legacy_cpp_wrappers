@@ -1,35 +1,40 @@
 #ifndef CJTHREADPOOL_H
 #define CJTHREADPOOL_H
 
-#include <stdio.h>
 #include <list>
 #include <queue>
 #include <memory>
-#include <process.h>
+#include <vector>
+#include <thread>
+#include <mutex>
+#include <atomic>
 
-#include "Lockable.h"
+#include <stdio.h>
 
 
 class CJThreadPool
 {
 public:
-	CJThreadPool( const int &numOfThrds );
+	CJThreadPool(const int& _numOfThrds);
+	CJThreadPool(const CJThreadPool &) = delete;
 	~CJThreadPool();
 
-	void AddShedule( void* (*)( void *t ), void *returnType, void *args );
-	void Run(void);
+	void AddShedule(void* (*)( void *t), void *_returnType, void *_args);
+	void Run();
 private:
-	void workThread(void);
+	static void workThread(CJThreadPool& _obj);
+	void schedule();
 
-	std::queue< std::shared_ptr< std::pair<void*, void*> > > params;
-	std::queue< void* ( *)( void *t ) > shedules;
-	std::list< uintptr_t > threads;
+	std::queue<std::shared_ptr<std::pair<void*, void*>>> m_params;
+	std::queue<void* ( *)( void *t )> m_shedules;
+	std::vector<std::thread> m_threads;
 
-	CMutex mutex;
+	std::mutex m_mutex;
+	std::atomic<bool> m_stillRunning;
 	
-	int maxNumOfThreads;
-	int numOfThreads;
-	int numOfShedules;
+	int m_maxNumOfThreads;
+	int m_numOfThreads;
+	int m_numOfShedules;
 };
 
 #endif

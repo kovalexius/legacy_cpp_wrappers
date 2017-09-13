@@ -1,74 +1,85 @@
+п»ї#include <chrono>
 #include "CJThreadPool.h"
 
-CJThreadPool::CJThreadPool( const int &numOfThrds )
+CJThreadPool::CJThreadPool(const int& _numOfThrds) : 
+									m_maxNumOfThreads(_numOfThrds),
+									m_numOfThreads(0),
+									m_numOfShedules(0),
+									m_stillRunning(true)
 {
-	maxNumOfThreads = numOfThrds;
-	numOfThreads = 0;
-	numOfShedules = 0;
 }
 
 CJThreadPool::~CJThreadPool()
 {
-
+	m_stillRunning.store(false);
 }
 
 void CJThreadPool::AddShedule( void* ( *f_ptr)( void *t ), void *returnType, void *args )
 {
-	shedules.push( f_ptr );
-	params.push( std::shared_ptr<std::pair<void*,void*>>( new std::pair<void*,void*> ( returnType, args) ) );
-	numOfShedules++;
+	m_shedules.push( f_ptr );
+	m_params.push( std::shared_ptr<std::pair<void*,void*>>( new std::pair<void*,void*> ( returnType, args) ) );
+	m_numOfShedules++;
 	
-	if( numOfThreads < maxNumOfThreads )
-		numOfThreads++;
+	if( m_numOfThreads < m_maxNumOfThreads )
+		m_numOfThreads++;
 }
 
-template<class T, void(T::*mem_fun)()>
-unsigned int WINAPI thread_to_member_thunk(void* p)
-{
-   (static_cast<T*>(p)->*mem_fun)();
-	 return 3;
-}
+//template<typename T, void(T::*mem_fun)()>
+//unsigned int WINAPI thread_to_member_thunk(void* p)
+//{
+//   (static_cast<T*>(p)->*mem_fun)();
+//	 return 3;
+//}
 
 void CJThreadPool::Run()
 {
-	for( int i = 0; i<numOfThreads; i++ )	// Запуск потоков
+	for(int i = 0; i<m_numOfThreads; i++)
 	{
-		uintptr_t hThread;
-		hThread = _beginthreadex(NULL, 0, thread_to_member_thunk<CJThreadPool, &CJThreadPool::workThread>, this, 0, NULL );
-		//SetThreadPriority( (HANDLE)hThread, THREAD_PRIORITY_TIME_CRITICAL );
-		threads.push_back( hThread );
+		//uintptr_t hThread;
+		//hThread = _beginthreadex(NULL, 0, workThread, *this, 0, NULL);
+		//m_threads.push_back( hThread );
+		//m_threads.push_back(std::make_shared<std::thread>(workThread, *this));
+		std::thread(workThread, std::ref(*this)).detach();
 	}
 
 	
-	for( auto it = threads.begin(); it != threads.end(); it ++ )	// Ждем все потоки, после выходим отсюда
-	{
-		WaitForSingleObject( (HANDLE)*it, INFINITE );
-		CloseHandle( (HANDLE)*it );
-	}
+	//for( auto it = m_threads.begin(); it != m_threads.end(); it ++ )	// Р–РґРµРј РІСЃРµ РїРѕС‚РѕРєРё, РїРѕСЃР»Рµ РІС‹С…РѕРґРёРј РѕС‚СЃСЋРґР°
+	//{
+	//	WaitForSingleObject( (HANDLE)*it, INFINITE );
+	//	CloseHandle( (HANDLE)*it );
+	//}
 	
 }
 
-void CJThreadPool::workThread(void)
+void CJThreadPool::workThread(CJThreadPool& _obj)
 {
-	while( 1 )
+	
+		_obj.schedule();
+}
+
+void CJThreadPool::schedule()
+{
+	while (m_stillRunning)
 	{
 		void * (*pf) (void*);
 		pf = 0;
+		std::shared_ptr<std::pair<void*, void*>> par;
 
-		mutex.Lock();
-		if( shedules.empty() )
 		{
-			mutex.Unlock();
-			break;
+			std::unique_lock<std::mutex> lk(m_mutex);
+			if (m_shedules.empty())
+			{
+				std::this_thread::sleep_for(std::chrono::milliseconds(10));
+				continue;
+			}
+			par.swap(m_params.front());
+			pf = m_shedules.front();
+			m_shedules.pop();
+			m_params.pop();
+			m_numOfShedules--;
 		}
-		std::shared_ptr< std::pair<void*, void*> > par = params.front();
-		pf = shedules.front();
-		shedules.pop();
-		params.pop();
-		numOfShedules--;
-		mutex.Unlock();
 
-		if(pf)
-			par->first = pf( par->second );  // Вызов вычислений
+		if (pf)
+			par->first = pf(par->second);  // Р’С‹Р·РѕРІ РІС‹С‡РёСЃР»РµРЅРёР№
 	}
 }
