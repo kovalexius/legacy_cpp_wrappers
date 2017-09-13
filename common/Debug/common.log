@@ -1,0 +1,49 @@
+﻿Build started 14.10.2013 0:23:01.
+     1>Project "F:\KOVProjects\VisualC++Projects\From Compas\netBuilder\common\common.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating "Debug\common.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _LIB /D _VC80_UPGRADE=0x0710 /D _MBCS /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt CNet.cpp CNetConnect.cpp CNetTcp.cpp CNetUdp.cpp
+         CNet.cpp
+         Generating Code...
+         Compiling...
+         CNetUdp.cpp
+         CNetTcp.cpp
+         CNetConnect.cpp
+     1>f:\kovprojects\visualc++projects\from compas\netbuilder\common\cnetconnect.h(48): warning C4482: nonstandard extension used: enum 'CNetOptions::SENDOPT' used in qualified name
+     1>f:\kovprojects\visualc++projects\from compas\netbuilder\common\cnetconnect.h(49): warning C4482: nonstandard extension used: enum 'CNetOptions::RECEIVEOPT' used in qualified name
+     1>f:\kovprojects\visualc++projects\from compas\netbuilder\common\cnetconnect.h(57): warning C4482: nonstandard extension used: enum 'CNetOptions::RECEIVEOPT' used in qualified name
+     1>f:\kovprojects\visualc++projects\from compas\netbuilder\common\cnetconnect.h(58): warning C4482: nonstandard extension used: enum 'CNetOptions::PROTOCOL' used in qualified name
+         Generating Code...
+       Lib:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\Lib.exe /OUT:"F:\KOVProjects\VisualC++Projects\From Compas\netBuilder\Debug\common.lib" /NOLOGO Debug\CNet.obj
+         Debug\CNetTcp.obj
+         Debug\CNetUdp.obj
+         Debug\Common.obj
+         Debug\ComPort.obj
+         Debug\CNetConnect.obj
+         Debug\DataCache.obj
+         Debug\Error.obj
+         Debug\Lockable.obj
+         Debug\Logger.obj
+         Debug\MLString.obj
+         Debug\PasswordArray.obj
+         Debug\PasswordKeeper.obj
+         Debug\Registry.obj
+         Debug\Thread.obj
+         Debug\Timer.obj
+         Debug\Variant.obj
+     1>DataCache.obj : warning LNK4221: This object file does not define any previously undefined public symbols, so it will not be used by any link operation that consumes this library
+     1>CNetConnect.obj : warning LNK4221: This object file does not define any previously undefined public symbols, so it will not be used by any link operation that consumes this library
+     1>CNetUdp.obj : warning LNK4221: This object file does not define any previously undefined public symbols, so it will not be used by any link operation that consumes this library
+     1>CNetTcp.obj : warning LNK4221: This object file does not define any previously undefined public symbols, so it will not be used by any link operation that consumes this library
+     1>CNet.obj : warning LNK4221: This object file does not define any previously undefined public symbols, so it will not be used by any link operation that consumes this library
+         common.vcxproj -> F:\KOVProjects\VisualC++Projects\From Compas\netBuilder\Debug\common.lib
+       FinalizeBuildStatus:
+         Deleting file "Debug\common.unsuccessfulbuild".
+         Touching "Debug\common.lastbuildstate".
+     1>Done Building Project "F:\KOVProjects\VisualC++Projects\From Compas\netBuilder\common\common.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:11.39
