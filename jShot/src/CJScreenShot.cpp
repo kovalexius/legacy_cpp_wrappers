@@ -1,18 +1,24 @@
 
 #include "CJScreenShot.h"
-#include "CJThreadPool.h"
+#include "../../JThreadPool/src/CJThreadPool.h"
 
-CJScreenShot::CJScreenShot( const int &sx, const int &sy, const unsigned int &maxY, 
-								unsigned char **&result, unsigned int *&lenOutBuf, unsigned int *&beginY, unsigned int *&heights,  bool *&isNew, int &count )
+CJScreenShot::CJScreenShot(const int& _sx, 
+						   const int& _sy, 
+						   const unsigned int &_maxY, 
+						   unsigned char **&result, 
+						   unsigned int *&lenOutBuf, 
+						   unsigned int *&beginY, 
+						   unsigned int *&heights,
+						   bool *&isNew, 
+						   int &count) : m_sx(_sx),
+										 m_sy(_sy),
+										 m_maxY(_maxY),
+										 m_numPeaces(_sy/_maxY + (_sy%_maxY > 0) ? 1 : 0)
 {
-	this->sx = sx;
-	this->sy = sy;
-
 	InitBitmapInfoStruct();
 
-	m_maxY = maxY;
-	bytesPerPxl = bmi.bmiHeader.biBitCount >> 3;
-	numPeaces = this->sy / m_maxY + ( ( this->sy % m_maxY > 0) ? 1 : 0 );
+	
+	m_bytesPerPxl = m_bmi.bmiHeader.biBitCount >> 3;
 	this->result = new unsigned char*[numPeaces];
 	this->inbuffer = new unsigned char*[numPeaces];
 
@@ -21,7 +27,7 @@ CJScreenShot::CJScreenShot( const int &sx, const int &sy, const unsigned int &ma
 	this->heights = new unsigned int[numPeaces];
 	this->isNew = new bool[numPeaces];
 
-	this->heshSum = new long[numPeaces];
+	this->hashSum = new long[numPeaces];
 	this->insize = new unsigned long[numPeaces];
 
 	unsigned long fullSize = bmi.bmiHeader.biSizeImage;
@@ -61,7 +67,7 @@ CJScreenShot::~CJScreenShot()
 	delete [] lenOutBuf;
 	delete [] beginY;
 	delete [] heights;
-	delete [] heshSum;
+	delete [] hashSum;
 	delete [] insize;
 	for( unsigned int i = 0; i < numPeaces; i++ )
 		delete [] inbuffer[i];
@@ -73,11 +79,11 @@ CJScreenShot::~CJScreenShot()
 
 void CJScreenShot::destroyBuffers()
 {
-	for( unsigned int i = 0; i < numPeaces; i++ )
-		jpcmpress.destroyBuffer( result[i] );
+	for( unsigned int i = 0; i < m_numPeaces; i++ )
+		m_jpcmpress.destroyBuffer( result[i] );
 }
 
-long CJScreenShot::getHesh( const unsigned long &size, unsigned char * const &buf )
+long CJScreenShot::getHash( const unsigned long &size, unsigned char * const &buf )
 {
 	long heshSum = 0;
 	for ( unsigned long i = 0; i < size; i++ )
@@ -87,17 +93,17 @@ long CJScreenShot::getHesh( const unsigned long &size, unsigned char * const &bu
 
 void CJScreenShot::InitBitmapInfoStruct( )
 {
-  // Initialize the fields in the BITMAPINFO structure.
-  bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-  bmi.bmiHeader.biWidth = sx;
-  bmi.bmiHeader.biHeight = -sy;
+	// Initialize the fields in the BITMAPINFO structure.
+	bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	bmi.bmiHeader.biWidth = m_sx;
+	bmi.bmiHeader.biHeight = -m_sy;
 	bmi.bmiHeader.biPlanes = 1;
 	bmi.bmiHeader.biBitCount = 24;
 
-  // If the bitmap is not compressed, set the BI_RGB flag.
-  bmi.bmiHeader.biCompression = BI_RGB;
-	bmi.bmiHeader.biSizeImage = sx * sy * 3;
-  bmi.bmiHeader.biClrImportant = 0;						// Set biClrImportant to 0, indicating that all of the device colors are important.
+	// If the bitmap is not compressed, set the BI_RGB flag.
+	bmi.bmiHeader.biCompression = BI_RGB;
+	bmi.bmiHeader.biSizeImage = m_sx * m_sy * 3;
+	bmi.bmiHeader.biClrImportant = 0;						// Set biClrImportant to 0, indicating that all of the device colors are important.
 }
 
 /*
@@ -145,18 +151,18 @@ void CJScreenShot::getJShot( const int &quality )
 
 void CJScreenShot::getScreenshot( PROCESS_PARAMS * const &param )
 {
-	mutex.Lock();
-	GetDIBits( MyHDC, hBMP, sy - beginY[param->i] - heights[param->i], heights[param->i], inbuffer[param->i], &bmi, DIB_RGB_COLORS );
-	mutex.Unlock();
+	m_mutex.lock();
+	GetDIBits(MyHDC, hBMP, m_sy - beginY[param->i] - heights[param->i], heights[param->i], inbuffer[param->i], &m_bmi, DIB_RGB_COLORS);
+	m_mutex.unlock();
 
-	BGR2RGB( inbuffer[param->i], insize[param->i] );
+	BGR2RGB(inbuffer[param->i], insize[param->i]);
 	
-	long hesh = getHesh( insize[param->i], inbuffer[param->i] );
-	if( hesh != heshSum[param->i] )
+	long hash = getHash(insize[param->i], inbuffer[param->i]);
+	if(hash != hashSum[param->i])
 	{
-		jpcmpress.destroyBuffer( result[param->i] );
-		result[param->i] = jpcmpress.compressJpegToMem( inbuffer[param->i], insize[param->i], sx, heights[param->i], quality, ( unsigned long& )( lenOutBuf[param->i] ) );
-		heshSum[param->i] = hesh;
+		jpcmpress.destroyBuffer(result[param->i]);
+		result[param->i] = jpcmpress.compressJpegToMem(inbuffer[param->i], insize[param->i], sx, heights[param->i], quality, (unsigned long&)(lenOutBuf[param->i]));
+		hashSum[param->i] = hash;
 		isNew[param->i] = true;
 	}
 	else

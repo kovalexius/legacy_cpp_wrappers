@@ -7,7 +7,7 @@ set(JSHOT
 		jShot/src/CJpegCompress.h
 		jShot/src/CJScreenShot.cpp
 		jShot/src/CJScreenShot.h
-		jShot/src/jDll1.cpp
+		jShot/src/jDll.cpp
 		jShot/src/jDll.h
 		jShot/src/myMgr.h
 		jShot/src/LibJpeg.cpp
