@@ -7,12 +7,16 @@ set(JSHOT
 		jShot/src/CJpegCompress.h
 		jShot/src/CJScreenShot.cpp
 		jShot/src/CJScreenShot.h
-		jShot/src/jDll1.cpp
+		jShot/src/jDll.cpp
 		jShot/src/jDll.h
 		jShot/src/myMgr.h
 		jShot/src/LibJpeg.cpp
 		jShot/src/LibJpeg.h
-		jShot/src/LibJpeg1.h)
+		jShot/src/LibJpeg1.h
+		jShot/src/GDIScreenShooter.cpp
+		jShot/src/GDIScreenShooter.h
+		jShot/src/types/geometry_types.cpp
+		jShot/src/types/geometry_types.h)
 		
 include_directories(./jpeg-9b)
 		
