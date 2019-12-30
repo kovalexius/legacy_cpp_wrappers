@@ -142,9 +142,9 @@ void CJScreenShot::getJShot( const int &quality )
 
 void CJScreenShot::getScreenshot( PROCESS_PARAMS * const &param )
 {
-	mutex.Lock();
+	m_mutex.lock();
 	GetDIBits(MyHDC, hBMP, m_sy - beginY[param->i] - heights[param->i], heights[param->i], inbuffer[param->i], &m_bmi, DIB_RGB_COLORS);
-	mutex.Unlock();
+	m_mutex.unlock();
 
 	BGR2RGB(inbuffer[param->i], insize[param->i]);
 	
