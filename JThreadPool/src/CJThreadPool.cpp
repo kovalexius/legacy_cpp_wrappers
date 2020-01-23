@@ -14,7 +14,7 @@ CJThreadPool::~CJThreadPool()
 	m_stillRunning.store(false);
 }
 
-void CJThreadPool::AddShedule( void* ( *f_ptr)( void *t ), void *returnType, void *args )
+void CJThreadPool::AddShedule( void* ( *f_ptr)(void *), void *returnType, void *args )
 {
 	m_shedules.push( f_ptr );
 	m_params.push( std::shared_ptr<std::pair<void*,void*>>( new std::pair<void*,void*> ( returnType, args) ) );

@@ -19,7 +19,7 @@ public:
 	CJThreadPool(const CJThreadPool &) = delete;
 	~CJThreadPool();
 
-	void AddShedule(void* (*)( void *t), void *_returnType, void *_args);
+	void AddShedule(void* (*)( void *), void *_returnType, void *_args);
 	void Run();
 private:
 	static void workThread(CJThreadPool& _obj);

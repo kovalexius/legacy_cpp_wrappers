@@ -12,16 +12,16 @@ class CGDIScreenShooter
 public:
 	CGDIScreenShooter();
 
-	std::vector<char> getScreenshot(const CRectangle& _region);
+    std::vector<char> getScreenshot(const CRectangle& _region, BITMAPINFOHEADER& _info);
 
 private:
 	void initBitmapInfoStruct();
 	void reinitDC();
 
-	CRectangle m_regin;
+	CRectangle m_region;
 
 	BITMAPINFO m_bmi;
-	HDC m_hDC;
+	HDC m_desktop_hDC;
 	HDC m_myHDC;
 	HBITMAP m_hBMP;
 };
