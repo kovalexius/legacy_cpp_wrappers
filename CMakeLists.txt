@@ -38,7 +38,7 @@ endif()
 
 if(DXSUPPORT)
 	include_directories(./jpeg-9b/ 
-					SYSTEM ${DIRECTX_INCLUDE_DIRS})
+					 ${DIRECTX_INCLUDE_DIR})
 else()
 	include_directories(./jpeg-9b/)
 endif()
