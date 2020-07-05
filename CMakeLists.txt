@@ -8,6 +8,7 @@ option(DXSUPPORT "DirectX supprot screenshoting" OFF)
 
 if(DXSUPPORT)
 	find_package(DirectX9 REQUIRED)
+    #include(DirectXConfig)
 endif()
 
 
@@ -47,7 +48,7 @@ add_library(jShot STATIC
 
 if(DXSUPPORT)
 	target_link_libraries(jShot
-							${DIRECTX_LIBRARIES})
+							${DIRECTX_LIBRARIES_PATHS})
 else()
 endif()
 
