@@ -31,8 +31,8 @@ else()
 			jShot/src/GDIScreenShooter.h
 			jShot/src/types/geometry_types.cpp
 			jShot/src/types/geometry_types.h
-			jShot/src/ddraw_decode_error.cpp
-			jShot/src/ddraw_decode_error.h
+			#jShot/src/jDll.cpp
+			#jShot/src/jDll.h
 		)
 endif()
 
@@ -58,8 +58,13 @@ set (JTHREADPOOL_SOURCE
 		
 add_library(jThreadPool STATIC ${JTHREADPOOL_SOURCE})
 
-add_executable(testJShot
+if(DXSUPPORT)
+	add_executable(testJShot
 				tests/testGDI.cpp)
+else()
+	add_executable(testJShot
+				tests/testJShot.cpp)
+endif()
 				
 target_link_libraries(testJShot
 							jShot

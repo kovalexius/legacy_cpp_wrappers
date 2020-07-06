@@ -48,7 +48,7 @@ file(GLOB DX9_SEARCH_LIBRARY_PATHS
 	"C:/Program Files (x86)/Windows Kits/10/Lib/10.0.*.0/um"
 	"C:/Program Files/Windows Kits/10/Lib/10.0.*.0/um"
 )
-#message(STATUS "DX9_SEARCH_LIBRARY_PATHS: ${DX9_SEARCH_LIBRARY_PATHS}")
+message(STATUS "DX9_SEARCH_LIBRARY_PATHS: ${DX9_SEARCH_LIBRARY_PATHS}")
 
 
 set(Bitdepth_SUFFIX "/x86")
@@ -57,9 +57,11 @@ if(CMAKE_SIZEOF_VOID_P EQUAL 8)
 endif()
 
 set(Lib_FOUND 1)
-foreach(current_dir ${DX9_SEARCH_LIBRARY_PATHS})
-    #message(STATUS "current_dir: ${current_dir}")
-    foreach(current_lib ${DirectX_LIBRARIES})
+foreach(current_lib ${DirectX_LIBRARIES})
+	message(STATUS "current_lib: ${current_lib}")
+	foreach(current_dir ${DX9_SEARCH_LIBRARY_PATHS})
+		message(STATUS "current_dir: ${current_dir}")
+		unset(PATH_LIB CACHE)
         find_library(PATH_LIB
 					NAMES ${current_lib}
 					PATH_SUFFIXES ${Bitdepth_SUFFIX}
@@ -67,22 +69,23 @@ foreach(current_dir ${DX9_SEARCH_LIBRARY_PATHS})
 					NO_DEFAULT_PATH
                     NO_CMAKE_PATH
                     NO_CMAKE_SYSTEM_PATH)
-        #message(STATUS "current_lib: ${current_lib}")
-        #message(STATUS "PATH_LIB: ${PATH_LIB}")
+        
+        message(STATUS "PATH_LIB: ${PATH_LIB}")
         
         if(${PATH_LIB} STREQUAL "PATH_LIB-NOTFOUND")
-            unset(DIRECTX_LIBRARIES_PATHS)
-            break()
+            #unset(DIRECTX_LIBRARIES_PATHS)
         else()
             set(DIRECTX_LIBRARIES_PATHS ${DIRECTX_LIBRARIES_PATHS} ${PATH_LIB})
+			break()
         endif()
         
-        unset(PATH_LIB CACHE)
+        
     endforeach()
-    #message(STATUS "")
-    if(DIRECTX_LIBRARIES_PATHS)
-        break()
-    endif()
+	
+    message(STATUS "")
+    #if(DIRECTX_LIBRARIES_PATHS)
+    #    break()
+    #endif()
 endforeach()
 
 message(STATUS "DIRECTX_INCLUDE_DIR: ${DIRECTX_INCLUDE_DIR}")

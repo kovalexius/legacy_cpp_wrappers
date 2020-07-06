@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <iostream>
 #include <chrono>
+#include <string>
 
 #include <conio.h>
 
@@ -38,8 +39,9 @@ void makeBmp(const CRectangle& _region)
 	writeBmpFile(header, body);
 }
 
-void testPerfomance(const CRectangle& _region)
+void testPerfomanceGDI(const CRectangle& _region)
 {
+	std::cout << "testPerfomanceGDI" << std::endl;
 	CGDIScreenShooter scrShooter;
 
 	BITMAPINFOHEADER tmp;
@@ -57,6 +59,48 @@ void testPerfomance(const CRectangle& _region)
 	std::cout << "Interval: \'" << diffTime.count() << "\' numIterations: \'" << numIterations << "\'" << std::endl;
 }
 
+void testPerfomanceDX(const CRectangle& _region)
+{
+	std::cout << "testPerfomanceDX" << std::endl;
+	CDxScreenShooter dxScreenShooter;
+
+	uint64_t numIterations = 0;
+	auto startTime = std::chrono::system_clock::now();
+
+	for (numIterations = 0; _kbhit() == 0; numIterations++)
+	{
+		dxScreenShooter.GetScreenShot(_region);
+
+		// write the entire surface to the requested file 
+		//std::string fileName(std::string("screenshotDx") + std::to_string(numIterations) + ".bmp");
+		//D3DXSaveSurfaceToFile(fileName.c_str(), D3DXIFF_BMP, m_surf, NULL, NULL);
+	}
+	auto endTime = std::chrono::system_clock::now();
+	getch();
+
+	std::chrono::duration<double> diffTime = endTime - startTime;
+	std::cout << "Interval: \'" << diffTime.count() << "\' numIterations: \'" << numIterations << "\'" << std::endl;
+}
+
+void testPerfomanceDDraw(const CRectangle& _region)
+{
+	std::cout << "testPerfomanceDDraw" << std::endl;
+	CDDrawScreenShooter ddScreenShooter;
+
+	uint64_t numIterations = 0;
+	auto startTime = std::chrono::system_clock::now();
+
+	for (numIterations = 0; _kbhit() == 0; numIterations++)
+	{
+		ddScreenShooter.GetScreenShot(_region);
+	}
+	auto endTime = std::chrono::system_clock::now();
+	getch();
+
+	std::chrono::duration<double> diffTime = endTime - startTime;
+	std::cout << "Interval: \'" << diffTime.count() << "\' numIterations: \'" << numIterations << "\'" << std::endl;
+}
+
 void main()
 {
     CRectangle region;
@@ -65,12 +109,13 @@ void main()
 	region.m_size.m_x = 1920;
 	region.m_size.m_y = 1080;
 
+	
+
 	//makeBmp(region);
-	//testPerfomance(region);
+	testPerfomanceGDI(region);
 
-	CDxScreenShooter dxScreenShooter;
-	dxScreenShooter.GetScreenShot(region);
+	testPerfomanceDX(region);
 
-	CDDrawScreenShooter ddScreenShooter;
-	ddScreenShooter.GetScreenShot(region);
+	testPerfomanceDDraw(region);
+
 }

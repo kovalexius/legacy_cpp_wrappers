@@ -1,4 +1,4 @@
-#include "DXScreenShooter.h"
+ï»¿#include "DXScreenShooter.h"
 
 #include <conio.h>
 #include <chrono>
@@ -19,22 +19,22 @@ CDxScreenShooter::~CDxScreenShooter()
 
 void CDxScreenShooter::initSurface()
 {
-	// ñòðóêòêóðà ñ ïàðàìåòðàìè äåâàéñà
+	// ÑÑ‚Ñ€ÑƒÐºÑ‚ÐºÑƒÑ€Ð° Ñ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð°Ð¼Ð¸ Ð´ÐµÐ²Ð°Ð¹ÑÐ°
 	D3DPRESENT_PARAMETERS d3dpp;
-	ZeroMemory(&d3dpp, sizeof(D3DPRESENT_PARAMETERS)); // îáíóëèì
-	d3dpp.BackBufferWidth = m_region.m_size.m_x; // óêàçûâàåì øèðèíó è
-	d3dpp.BackBufferHeight = m_region.m_size.m_y; // âûñîòó îáëàñòè ðåíäåðà
-	d3dpp.BackBufferCount = 1;					// îäèí âíåýêðàííûé áóôåð
-	d3dpp.Windowed = TRUE;						// ðåíäåð â îêíå, à íå â ïîëíûé ýêðàí
+	ZeroMemory(&d3dpp, sizeof(D3DPRESENT_PARAMETERS)); // Ð¾Ð±Ð½ÑƒÐ»Ð¸Ð¼
+	d3dpp.BackBufferWidth = m_region.m_size.m_x; // ÑƒÐºÐ°Ð·Ñ‹Ð²Ð°ÐµÐ¼ ÑˆÐ¸Ñ€Ð¸Ð½Ñƒ Ð¸
+	d3dpp.BackBufferHeight = m_region.m_size.m_y; // Ð²Ñ‹ÑÐ¾Ñ‚Ñƒ Ð¾Ð±Ð»Ð°ÑÑ‚Ð¸ Ñ€ÐµÐ½Ð´ÐµÑ€Ð°
+	d3dpp.BackBufferCount = 1;					// Ð¾Ð´Ð¸Ð½ Ð²Ð½ÐµÑÐºÑ€Ð°Ð½Ð½Ñ‹Ð¹ Ð±ÑƒÑ„ÐµÑ€
+	d3dpp.Windowed = TRUE;						// Ñ€ÐµÐ½Ð´ÐµÑ€ Ð² Ð¾ÐºÐ½Ðµ, Ð° Ð½Ðµ Ð² Ð¿Ð¾Ð»Ð½Ñ‹Ð¹ ÑÐºÑ€Ð°Ð½
 	//d3dpp.Windowed = FALSE;
-	d3dpp.BackBufferFormat = D3DFMT_UNKNOWN;	// ôîðìàò âûáåðåò ñàì DX
-	//d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;		// òàê ëó÷øå äåëàòü âñåãäà
+	d3dpp.BackBufferFormat = D3DFMT_UNKNOWN;	// Ñ„Ð¾Ñ€Ð¼Ð°Ñ‚ Ð²Ñ‹Ð±ÐµÑ€ÐµÑ‚ ÑÐ°Ð¼ DX
+	//d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;		// Ñ‚Ð°Ðº Ð»ÑƒÑ‡ÑˆÐµ Ð´ÐµÐ»Ð°Ñ‚ÑŒ Ð²ÑÐµÐ³Ð´Ð°
 	d3dpp.SwapEffect = D3DSWAPEFFECT_FLIP;
-	d3dpp.AutoDepthStencilFormat = D3DFMT_D24S8;	// ôîðìàò Z-áóôåðà
-	d3dpp.EnableAutoDepthStencil = FALSE;		// íàì íåíóæåí Z-áóôåð
+	d3dpp.AutoDepthStencilFormat = D3DFMT_D24S8;	// Ñ„Ð¾Ñ€Ð¼Ð°Ñ‚ Z-Ð±ÑƒÑ„ÐµÑ€Ð°
+	d3dpp.EnableAutoDepthStencil = FALSE;		// Ð½Ð°Ð¼ Ð½ÐµÐ½ÑƒÐ¶ÐµÐ½ Z-Ð±ÑƒÑ„ÐµÑ€
 	d3dpp.PresentationInterval = D3DPRESENT_INTERVAL_ONE;
 
-	// ñíà÷àëà ïðîèöèöèàëèçèðóåì ñàì DirectX 9
+	// ÑÐ½Ð°Ñ‡Ð°Ð»Ð° Ð¿Ñ€Ð¾Ð¸Ñ†Ð¸Ñ†Ð¸Ð°Ð»Ð¸Ð·Ð¸Ñ€ÑƒÐµÐ¼ ÑÐ°Ð¼ DirectX 9
 	IDirect3D9 * pD3D = Direct3DCreate9(D3D_SDK_VERSION);
 	if (pD3D == NULL)
 		return;
@@ -78,34 +78,74 @@ void CDxScreenShooter::initSurface()
 	}
 }
 
+HBITMAP CopySurfaceToBitmap(IDirect3DSurface9 *_pD3DSurface, BYTE *_pData, BITMAPINFO *_pHeader)
+{
+	HDC hScrDC, hMemDC;			// surface DC and memory D
+	HBITMAP hBitmap, hOldBitmap;	// handles to deice-dependent bitmap
+	int nX, nY;					// top-left of rectangle to gra
+	int nWidth, nHeight;		// DIB width and heigh
+
+	if (_pD3DSurface == NULL)
+		return NULL;
+
+	// create a DC for the surface and creat
+	// a memory DC compatible to surface D
+	_pD3DSurface->GetDC(&hScrDC);
+	hMemDC = CreateCompatibleDC(hScrDC);
+
+	D3DSURFACE_DESC desc;
+	_pD3DSurface->GetDesc(&desc);
+
+	// get points of rectangle to gra
+	nX = 0;
+	nY = 0;
+
+	nWidth = desc.Width;
+	nHeight = desc.Height;
+
+	// create a bitmap compatible with the surface D
+	hBitmap = CreateCompatibleBitmap(hScrDC, nWidth, nHeight);
+
+	// select new bitmap into memory D
+	hOldBitmap = (HBITMAP)SelectObject(hMemDC, hBitmap);
+
+	// bitblt surface DC to memory D
+	BitBlt(hMemDC, 0, 0, nWidth, nHeight, hScrDC, nX, nY, SRCCOPY);
+
+	// select old bitmap back into memory DC and get handle t
+	// bitmap of the surfac
+	hBitmap = (HBITMAP)SelectObject(hMemDC, hOldBitmap);
+
+	// Copy the bitmap data into the provided BYTE buffe
+	GetDIBits(hScrDC, hBitmap, 0, nHeight, _pData, _pHeader, DIB_RGB_COLORS);
+
+	// clean u
+	_pD3DSurface->ReleaseDC(hScrDC);
+	DeleteDC(hMemDC);
+
+	// return handle to the bitma
+	return hBitmap;
+}
+
 // ScreenShot 
 bool CDxScreenShooter::GetScreenShot(const CRectangle& _region)
 {
 	if (m_region != _region)
 	{
 		m_region = _region;
-		initSurface();			// Óòå÷êà?
+		initSurface();			// Ð£Ñ‚ÐµÑ‡ÐºÐ°?
 	}
 
-	uint64_t numIterations = 0;
-	auto startTime = std::chrono::system_clock::now();
-	for (numIterations = 0; _kbhit() == 0; numIterations++)
+	// read the front buffer into the image surface 
+	if (D3D_OK != m_pd3dDevice->GetFrontBufferData(0, m_surf))
 	{
-		// read the front buffer into the image surface 
-		if (D3D_OK != m_pd3dDevice->GetFrontBufferData(0, m_surf))
-		{
-			m_surf->Release();
-			return false;
-		}
-
-		// write the entire surface to the requested file 
-		std::string fileName(std::string("screenshotDx") + std::to_string(numIterations) + ".bmp");
-		D3DXSaveSurfaceToFile(fileName.c_str(), D3DXIFF_BMP, m_surf, NULL, NULL);
+		m_surf->Release();
+		return false;
 	}
-	auto endTime = std::chrono::system_clock::now();
 
-	std::chrono::duration<double> diffTime = endTime - startTime;
-	std::cout << "Interval: \'" << diffTime.count() << "\' numIterations: \'" << numIterations << "\'" << std::endl;
+	BYTE *pData; 
+	BITMAPINFO *pHeader;
+	HBITMAP bitmap = CopySurfaceToBitmap(m_surf, pData, pHeader);
 
 	// return status of save operation to caller 
 	return true;

@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 
 #include "DDrawScreenShooter.h"
 #include "ddraw_decode_error.h"
@@ -34,14 +34,18 @@ void CDDrawScreenShooter::GetScreenShot(const CRectangle& _region)
 		return;
 	}
 
-
+	/*
 	HDC hDC;
 	hResult = lpPrimarySurface->GetDC(&hDC);
 	if (hResult != DD_OK)
 	{
 		return;
 	}
-
-
-	std::cout << "Success" << std::endl;
+	*/
+	RECT rectangle;
+	rectangle.left = _region.m_leftBottomCorner.m_x;
+	rectangle.top = _region.m_leftBottomCorner.m_y + _region.m_size.m_y;
+	rectangle.bottom = _region.m_leftBottomCorner.m_y;
+	rectangle.right = _region.m_leftBottomCorner.m_x + _region.m_size.m_x;
+	//lpPrimarySurface->Blt(rectangle,);
 }

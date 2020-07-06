@@ -1,16 +1,16 @@
-#include "jDll.h"
+﻿#include "jDll.h"
 
 #include "CScreenshot.h"
 #include "CJpegCompress.h"
 
 
-static void getScreenParam( int &x, int &y )
+static void getScreenParam(int &_x, int &_y )
 {
-	x = GetSystemMetrics(SM_CXSCREEN);
-	y = GetSystemMetrics(SM_CYSCREEN);
+	_x = GetSystemMetrics(SM_CXSCREEN);
+	_y = GetSystemMetrics(SM_CYSCREEN);
 }
 
-CJShot *jshot = NULL;
+//CJShot *jshot = NULL;
 CScreenshot *scrn = NULL;
 int sx = 0;
 int sy = 0;
@@ -28,8 +28,8 @@ int numPeaces;
 void** getJShot(int quality, 
 				int maxHeight,
 				unsigned int *&lensBuf, 
-				unsigned int *&y, 
-				unsigned int *&h, 
+				unsigned int *&_y, 
+				unsigned int *&_h, 
 				bool *&isNew, 
 				int &count, 
 				int &width, 
@@ -47,20 +47,20 @@ void** getJShot(int quality,
 			delete scrn;
 		scrn = new CScreenshot( scrBuffer, bih, sx, sy );
 		
-		if( jshot )
-			delete jshot;
-		jshot = new CJShot( ::maxH, quality, ::bih, ::scrBuffer, ::result, ::lenOutbuf, ::beginY, ::heights, ::isNew, ::numPeaces );
+		//if( jshot )
+		//	delete jshot;
+		//jshot = new CJShot( ::maxH, quality, ::bih, ::scrBuffer, ::result, ::lenOutbuf, ::beginY, ::heights, ::isNew, ::numPeaces );
 	}
 	
 	if( scrn )
 		scrn->getScreenshot( );
 	
-	if( jshot )
-		jshot->getJShot( quality );
+	//if( jshot )
+	//	jshot->getJShot( quality );
 
 	lensBuf = ::lenOutbuf;
-	y = ::beginY;
-	h = ::heights;
+	_y = ::beginY;
+	_h = ::heights;
 	isNew = ::isNew;
 	count = ::numPeaces;
 	
@@ -70,14 +70,14 @@ void** getJShot(int quality,
 bool destroyJShot( void )
 {
 	delete scrn;
-	delete jshot;
+	//delete jshot;
 
 	return true;
 }
 
 void destroyBuffers( void )
 {
-	jshot->destroyBuffers();
+	//jshot->destroyBuffers();
 }
 
 int printHelloWorld( int time )
