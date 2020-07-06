@@ -15,9 +15,11 @@ const WORD g_M = static_cast<WORD>('M');
 const WORD g_BM = g_B + (g_M << 8);
 
 
-void writeBmpFile(const std::vector<char>& _header, const std::vector<char>& _data)
+void writeBmpFile(const std::string& _filename, 
+				  const std::vector<char>& _header, 
+				  const std::vector<char>& _data)
 {
-    std::fstream outFile("snapshot.bmp", std::ios::binary | std::ios::out | std::ios::trunc);
+	std::fstream outFile(_filename, std::ios::binary | std::ios::out | std::ios::trunc);
     outFile.write(_header.data(), _header.size());
     outFile.write(_data.data(), _data.size());
 }
@@ -36,7 +38,7 @@ void makeBmp(const CRectangle& _region)
 	pFHeader->bfReserved1 = 0;
 	pFHeader->bfReserved2 = 0;
 	pFHeader->bfOffBits = header.size();
-	writeBmpFile(header, body);
+	writeBmpFile("snapshot.bmp", header, body);
 }
 
 void testPerfomanceGDI(const CRectangle& _region)
@@ -66,13 +68,14 @@ void testPerfomanceDX(const CRectangle& _region)
 
 	uint64_t numIterations = 0;
 	auto startTime = std::chrono::system_clock::now();
-
+	 
+	std::vector<char> buffer;
 	for (numIterations = 0; _kbhit() == 0; numIterations++)
 	{
-		dxScreenShooter.GetScreenShot(_region);
+		dxScreenShooter.GetScreenShot(_region, buffer);
 
 		// write the entire surface to the requested file 
-		//std::string fileName(std::string("screenshotDx") + std::to_string(numIterations) + ".bmp");
+		std::string fileName(std::string("screenshotDx") + std::to_string(numIterations) + ".bmp");
 		//D3DXSaveSurfaceToFile(fileName.c_str(), D3DXIFF_BMP, m_surf, NULL, NULL);
 	}
 	auto endTime = std::chrono::system_clock::now();
@@ -111,7 +114,7 @@ void main()
 
 	
 
-	//makeBmp(region);
+	makeBmp(region);
 	testPerfomanceGDI(region);
 
 	testPerfomanceDX(region);

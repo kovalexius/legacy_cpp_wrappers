@@ -5,7 +5,7 @@
 #include <string>
 #include <iostream>
 
-CDxScreenShooter::CDxScreenShooter()
+CDxScreenShooter::CDxScreenShooter() : m_surf(nullptr), m_pd3dDevice(nullptr)
 {
 	initSurface();
 }
@@ -13,12 +13,21 @@ CDxScreenShooter::CDxScreenShooter()
 CDxScreenShooter::~CDxScreenShooter()
 {
 	// release the image surface 
-	m_surf->Release();
+	releaseAll();
 }
 
+void CDxScreenShooter::releaseAll()
+{
+	if (m_surf)
+		m_surf->Release();
+	if (m_pd3dDevice)
+		m_pd3dDevice->Release();
+}
 
 void CDxScreenShooter::initSurface()
 {
+	releaseAll();
+
 	// структкура с параметрами девайса
 	D3DPRESENT_PARAMETERS d3dpp;
 	ZeroMemory(&d3dpp, sizeof(D3DPRESENT_PARAMETERS)); // обнулим
@@ -56,16 +65,15 @@ void CDxScreenShooter::initSurface()
 
 	// get display dimensions 
 	// this will be the dimensions of the front buffer
-	std::shared_ptr<D3DDISPLAYMODE> mode(std::make_shared<D3DDISPLAYMODE>());
-	if (D3D_OK != m_pd3dDevice->GetDisplayMode(NULL, mode.get()))
+	if (D3D_OK != m_pd3dDevice->GetDisplayMode(NULL, &m_displaymode))
 	{
 		return;
 	}
 
 	// create the image surface to store the front buffer image 
 	// note that call to GetFrontBuffer will always convert format to A8R8G8B8 
-	if (D3D_OK != m_pd3dDevice->CreateOffscreenPlainSurface(mode->Width,
-		mode->Height,
+	if (D3D_OK != m_pd3dDevice->CreateOffscreenPlainSurface(m_displaymode.Width,
+		m_displaymode.Height,
 		D3DFMT_A8R8G8B8,
 		D3DPOOL_SCRATCH,
 		//D3DPOOL_DEFAULT,
@@ -76,8 +84,12 @@ void CDxScreenShooter::initSurface()
 	{
 		return;
 	}
+
+	// Нужно ли?
+	pD3D->Release();
 }
 
+/*
 HBITMAP CopySurfaceToBitmap(IDirect3DSurface9 *_pD3DSurface, BYTE *_pData, BITMAPINFO *_pHeader)
 {
 	HDC hScrDC, hMemDC;			// surface DC and memory D
@@ -126,9 +138,10 @@ HBITMAP CopySurfaceToBitmap(IDirect3DSurface9 *_pD3DSurface, BYTE *_pData, BITMA
 	// return handle to the bitma
 	return hBitmap;
 }
+/**/
 
 // ScreenShot 
-bool CDxScreenShooter::GetScreenShot(const CRectangle& _region)
+bool CDxScreenShooter::GetScreenShot(const CRectangle& _region, std::vector<char>& _outBuffer)
 {
 	if (m_region != _region)
 	{
@@ -139,13 +152,39 @@ bool CDxScreenShooter::GetScreenShot(const CRectangle& _region)
 	// read the front buffer into the image surface 
 	if (D3D_OK != m_pd3dDevice->GetFrontBufferData(0, m_surf))
 	{
+		std::cout << "Failed GetFrontBufferData()" << std::endl;
 		m_surf->Release();
 		return false;
 	}
 
-	BYTE *pData; 
-	BITMAPINFO *pHeader;
-	HBITMAP bitmap = CopySurfaceToBitmap(m_surf, pData, pHeader);
+	//BYTE *pData = NULL; 
+	//BITMAPINFO *pHeader = NULL;
+	//HBITMAP bitmap = CopySurfaceToBitmap(m_surf, pData, pHeader);
+
+	D3DLOCKED_RECT lr;
+	ZeroMemory(&lr, sizeof(D3DLOCKED_RECT));
+
+	HRESULT hr = m_surf->LockRect(&lr, 0, D3DLOCK_READONLY);
+	if (FAILED(hr))
+	{
+		std::cout << "Failed LockRect()" << std::endl;
+		return false;
+	}
+	
+	//_outBuffer.resize(m_displaymode.Width * m_displaymode.Height * m_displaymode.Format);
+	_outBuffer.resize(m_displaymode.Width * m_displaymode.Height * 4);
+	if (lr.pBits)
+	{
+		//memcpy(_outBuffer.data(), lr.pBits, m_displaymode.Width * m_displaymode.Height * m_displaymode.Format);
+		memcpy(_outBuffer.data(), lr.pBits, m_displaymode.Width * m_displaymode.Height * 4);
+	}
+
+	hr = m_surf->UnlockRect();
+	if (FAILED(hr))
+	{
+		std::cout << "Cannot unlock rect!" << std::endl;
+		return false;
+	}
 
 	// return status of save operation to caller 
 	return true;
