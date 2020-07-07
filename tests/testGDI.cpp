@@ -41,6 +41,34 @@ void makeBmp(const CRectangle& _region)
 	writeBmpFile("snapshot.bmp", header, body);
 }
 
+void makeBmpHeader(const CRectangle& _region, std::vector<char>& _header)
+{
+	_header.resize(sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER));
+	BITMAPFILEHEADER* pFHeader = reinterpret_cast<BITMAPFILEHEADER*>(_header.data());
+	BITMAPINFOHEADER* pInfoHeader = reinterpret_cast<BITMAPINFOHEADER*>(_header.data() + sizeof(BITMAPFILEHEADER));
+
+	auto sizeimage = _region.m_size.m_x * _region.m_size.m_y * 4;
+	pInfoHeader->biSize = sizeof(BITMAPINFOHEADER) - 
+		sizeof(decltype(BITMAPINFOHEADER::biClrUsed)) - 
+		sizeof(decltype(BITMAPINFOHEADER::biClrImportant));
+	pInfoHeader->biWidth = _region.m_size.m_x;
+	pInfoHeader->biHeight = _region.m_size.m_y;
+	pInfoHeader->biPlanes = 1;
+	pInfoHeader->biBitCount = 32;
+	pInfoHeader->biCompression = 0;
+	pInfoHeader->biSizeImage = sizeimage;
+	pInfoHeader->biXPelsPerMeter = 0;
+	pInfoHeader->biYPelsPerMeter = 0;
+	pInfoHeader->biClrUsed = 0;
+	pInfoHeader->biClrImportant = 0;
+
+	pFHeader->bfType = g_BM;
+	pFHeader->bfSize = pInfoHeader->biSizeImage + _header.size();
+	pFHeader->bfReserved1 = 0;
+	pFHeader->bfReserved2 = 0;
+	pFHeader->bfOffBits = _header.size();
+}
+
 void testPerfomanceGDI(const CRectangle& _region)
 {
 	std::cout << "testPerfomanceGDI" << std::endl;
@@ -77,6 +105,9 @@ void testPerfomanceDX(const CRectangle& _region)
 		// write the entire surface to the requested file 
 		std::string fileName(std::string("screenshotDx") + std::to_string(numIterations) + ".bmp");
 		//D3DXSaveSurfaceToFile(fileName.c_str(), D3DXIFF_BMP, m_surf, NULL, NULL);
+		std::vector<char> header;
+		makeBmpHeader(_region, header);
+		writeBmpFile(fileName, header, buffer);
 	}
 	auto endTime = std::chrono::system_clock::now();
 	getch();

@@ -89,57 +89,6 @@ void CDxScreenShooter::initSurface()
 	pD3D->Release();
 }
 
-/*
-HBITMAP CopySurfaceToBitmap(IDirect3DSurface9 *_pD3DSurface, BYTE *_pData, BITMAPINFO *_pHeader)
-{
-	HDC hScrDC, hMemDC;			// surface DC and memory D
-	HBITMAP hBitmap, hOldBitmap;	// handles to deice-dependent bitmap
-	int nX, nY;					// top-left of rectangle to gra
-	int nWidth, nHeight;		// DIB width and heigh
-
-	if (_pD3DSurface == NULL)
-		return NULL;
-
-	// create a DC for the surface and creat
-	// a memory DC compatible to surface D
-	_pD3DSurface->GetDC(&hScrDC);
-	hMemDC = CreateCompatibleDC(hScrDC);
-
-	D3DSURFACE_DESC desc;
-	_pD3DSurface->GetDesc(&desc);
-
-	// get points of rectangle to gra
-	nX = 0;
-	nY = 0;
-
-	nWidth = desc.Width;
-	nHeight = desc.Height;
-
-	// create a bitmap compatible with the surface D
-	hBitmap = CreateCompatibleBitmap(hScrDC, nWidth, nHeight);
-
-	// select new bitmap into memory D
-	hOldBitmap = (HBITMAP)SelectObject(hMemDC, hBitmap);
-
-	// bitblt surface DC to memory D
-	BitBlt(hMemDC, 0, 0, nWidth, nHeight, hScrDC, nX, nY, SRCCOPY);
-
-	// select old bitmap back into memory DC and get handle t
-	// bitmap of the surfac
-	hBitmap = (HBITMAP)SelectObject(hMemDC, hOldBitmap);
-
-	// Copy the bitmap data into the provided BYTE buffe
-	GetDIBits(hScrDC, hBitmap, 0, nHeight, _pData, _pHeader, DIB_RGB_COLORS);
-
-	// clean u
-	_pD3DSurface->ReleaseDC(hScrDC);
-	DeleteDC(hMemDC);
-
-	// return handle to the bitma
-	return hBitmap;
-}
-/**/
-
 // ScreenShot 
 bool CDxScreenShooter::GetScreenShot(const CRectangle& _region, std::vector<char>& _outBuffer)
 {
