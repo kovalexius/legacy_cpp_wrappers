@@ -19,12 +19,16 @@ struct CRectangle
 {
 public:
 	CRectangle() : m_leftBottomCorner(0,0),
-		m_size(0,0)
+		m_size(0,0),
+		m_bpp(32)
 	{}
 
-	explicit CRectangle(const Vector2& _leftBottomCorner, const Vector2& _size) :
+	explicit CRectangle(const Vector2& _leftBottomCorner, 
+						const Vector2& _size,
+						short _bitPerPixel) :
 																			m_leftBottomCorner(_leftBottomCorner),
-																			m_size(_size)
+																			m_size(_size),
+																			m_bpp(_bitPerPixel)
 	{}
 
 	bool operator == (const CRectangle& _other);
@@ -32,6 +36,9 @@ public:
 
 	Vector2 m_leftBottomCorner;
 	Vector2 m_size;
+
+	// The number of bytes-per-pixel.
+	short	m_bytespp;
 };
 
 #endif

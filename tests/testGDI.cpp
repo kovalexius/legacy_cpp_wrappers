@@ -47,7 +47,7 @@ void makeBmpHeader(const CRectangle& _region, std::vector<char>& _header)
 	BITMAPFILEHEADER* pFHeader = reinterpret_cast<BITMAPFILEHEADER*>(_header.data());
 	BITMAPINFOHEADER* pInfoHeader = reinterpret_cast<BITMAPINFOHEADER*>(_header.data() + sizeof(BITMAPFILEHEADER));
 
-	auto sizeimage = _region.m_size.m_x * _region.m_size.m_y * 4;
+	auto sizeimage = _region.m_size.m_x * _region.m_size.m_y * (_region.m_bpp / 8);
 	pInfoHeader->biSize = sizeof(BITMAPINFOHEADER) - 
 		sizeof(decltype(BITMAPINFOHEADER::biClrUsed)) - 
 		sizeof(decltype(BITMAPINFOHEADER::biClrImportant));
