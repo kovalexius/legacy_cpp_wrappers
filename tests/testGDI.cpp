@@ -30,8 +30,15 @@ void makeBmp(const CRectangle& _region)
 	BITMAPFILEHEADER* pFHeader = reinterpret_cast<BITMAPFILEHEADER*>(header.data());
 	BITMAPINFOHEADER* pInfoHeader = reinterpret_cast<BITMAPINFOHEADER*>(header.data() + sizeof(BITMAPFILEHEADER));
 
-	CGDIScreenShooter scrShooter;
-	auto body = scrShooter.getScreenshot(_region, *pInfoHeader);
+
+	CGDIScreenShooter scrShooter(_region);
+	std::vector<char> body;
+	if (!scrShooter.getScreenshot(_region, body))
+	{
+		std::cout << __FUNCTION__ << " getScreenshot failed" << std::endl;
+		return;
+	}
+	scrShooter.getBitMapInfoHeader(*pInfoHeader);
 
 	pFHeader->bfType = g_BM;
 	pFHeader->bfSize = pInfoHeader->biSizeImage + header.size();
@@ -47,14 +54,14 @@ void makeBmpHeader(const CRectangle& _region, std::vector<char>& _header)
 	BITMAPFILEHEADER* pFHeader = reinterpret_cast<BITMAPFILEHEADER*>(_header.data());
 	BITMAPINFOHEADER* pInfoHeader = reinterpret_cast<BITMAPINFOHEADER*>(_header.data() + sizeof(BITMAPFILEHEADER));
 
-	auto sizeimage = _region.m_size.m_x * _region.m_size.m_y * (_region.m_bpp / 8);
+	auto sizeimage = _region.getSize().m_x * _region.getSize().m_y * _region.getBytesPerPixel();
 	pInfoHeader->biSize = sizeof(BITMAPINFOHEADER) - 
 		sizeof(decltype(BITMAPINFOHEADER::biClrUsed)) - 
 		sizeof(decltype(BITMAPINFOHEADER::biClrImportant));
-	pInfoHeader->biWidth = _region.m_size.m_x;
-	pInfoHeader->biHeight = _region.m_size.m_y;
+	pInfoHeader->biWidth = _region.getSize().m_x;
+	pInfoHeader->biHeight = _region.getSize().m_y;
 	pInfoHeader->biPlanes = 1;
-	pInfoHeader->biBitCount = 32;
+	pInfoHeader->biBitCount = _region.getBitsPerPixel();
 	pInfoHeader->biCompression = 0;
 	pInfoHeader->biSizeImage = sizeimage;
 	pInfoHeader->biXPelsPerMeter = 0;
@@ -72,15 +79,19 @@ void makeBmpHeader(const CRectangle& _region, std::vector<char>& _header)
 void testPerfomanceGDI(const CRectangle& _region)
 {
 	std::cout << "testPerfomanceGDI" << std::endl;
-	CGDIScreenShooter scrShooter;
+	CGDIScreenShooter scrShooter(_region);
 
-	BITMAPINFOHEADER tmp;
 	uint64_t numIterations = 0;
 
 	auto startTime = std::chrono::system_clock::now();
+	std::vector<char> buffer;
 	for (numIterations = 0; _kbhit() == 0; numIterations++)
 	{
-		scrShooter.getScreenshot(_region, tmp);
+		if (!scrShooter.getScreenshot(_region, buffer))
+		{
+			std::cout << __FUNCTION__ << " failed" << std::endl;
+			return;
+		}
 	}
 	auto endTime = std::chrono::system_clock::now();
 	getch();
@@ -102,12 +113,14 @@ void testPerfomanceDX(const CRectangle& _region)
 	{
 		dxScreenShooter.GetScreenShot(_region, buffer);
 
+		/*
 		// write the entire surface to the requested file 
 		std::string fileName(std::string("screenshotDx") + std::to_string(numIterations) + ".bmp");
 		//D3DXSaveSurfaceToFile(fileName.c_str(), D3DXIFF_BMP, m_surf, NULL, NULL);
 		std::vector<char> header;
 		makeBmpHeader(_region, header);
 		writeBmpFile(fileName, header, buffer);
+		*/
 	}
 	auto endTime = std::chrono::system_clock::now();
 	getch();
@@ -137,12 +150,7 @@ void testPerfomanceDDraw(const CRectangle& _region)
 
 void main()
 {
-    CRectangle region;
-    region.m_leftBottomCorner.m_x = 0;
-    region.m_leftBottomCorner.m_y = 0;
-	region.m_size.m_x = 1920;
-	region.m_size.m_y = 1080;
-
+    CRectangle region(Vector2(0,0), Vector2(1920,1080), 4);
 	
 
 	makeBmp(region);

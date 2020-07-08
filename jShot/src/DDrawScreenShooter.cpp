@@ -43,9 +43,9 @@ void CDDrawScreenShooter::GetScreenShot(const CRectangle& _region)
 	}
 	*/
 	RECT rectangle;
-	rectangle.left = _region.m_leftBottomCorner.m_x;
-	rectangle.top = _region.m_leftBottomCorner.m_y + _region.m_size.m_y;
-	rectangle.bottom = _region.m_leftBottomCorner.m_y;
-	rectangle.right = _region.m_leftBottomCorner.m_x + _region.m_size.m_x;
+	rectangle.left = _region.getLeftBottom().m_x;
+	rectangle.top = _region.getLeftBottom().m_y + _region.getSize().m_y;
+	rectangle.bottom = _region.getLeftBottom().m_y;
+	rectangle.right = _region.getLeftBottom().m_x + _region.getSize().m_x;
 	//lpPrimarySurface->Blt(rectangle,);
 }

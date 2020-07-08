@@ -31,8 +31,8 @@ void CDxScreenShooter::initSurface()
 	// структкура с параметрами девайса
 	D3DPRESENT_PARAMETERS d3dpp;
 	ZeroMemory(&d3dpp, sizeof(D3DPRESENT_PARAMETERS)); // обнулим
-	d3dpp.BackBufferWidth = m_region.m_size.m_x; // указываем ширину и
-	d3dpp.BackBufferHeight = m_region.m_size.m_y; // высоту области рендера
+	d3dpp.BackBufferWidth = m_region.getSize().m_x; // указываем ширину и
+	d3dpp.BackBufferHeight = m_region.getSize().m_y; // высоту области рендера
 	d3dpp.BackBufferCount = 1;					// один внеэкранный буфер
 	d3dpp.Windowed = TRUE;						// рендер в окне, а не в полный экран
 	//d3dpp.Windowed = FALSE;
@@ -121,11 +121,11 @@ bool CDxScreenShooter::GetScreenShot(const CRectangle& _region, std::vector<char
 	}
 	
 	//_outBuffer.resize(m_displaymode.Width * m_displaymode.Height * m_displaymode.Format);
-	_outBuffer.resize(m_displaymode.Width * m_displaymode.Height * 4);
+	_outBuffer.resize(m_displaymode.Width * m_displaymode.Height * _region.getBytesPerPixel());
 	if (lr.pBits)
 	{
 		//memcpy(_outBuffer.data(), lr.pBits, m_displaymode.Width * m_displaymode.Height * m_displaymode.Format);
-		memcpy(_outBuffer.data(), lr.pBits, m_displaymode.Width * m_displaymode.Height * 4);
+		memcpy(_outBuffer.data(), lr.pBits, m_displaymode.Width * m_displaymode.Height * _region.getBytesPerPixel());
 	}
 
 	hr = m_surf->UnlockRect();
