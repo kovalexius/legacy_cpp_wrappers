@@ -26,8 +26,8 @@ foreach(current_dir ${DX9_SEARCH_INCLUDE_PATHS})
             NO_CMAKE_PATH
             )
     if(DIRECTX_INCLUDE_DIR STREQUAL "DIRECTX_INCLUDE_DIR-NOTFOUND")
-        message(STATUS "current_dir: ${current_dir}")
-        message(STATUS "DIRECTX_INCLUDE_DIRS: ${DIRECTX_INCLUDE_DIR}")
+        #message(STATUS "current_dir: ${current_dir}")
+        #message(STATUS "DIRECTX_INCLUDE_DIRS: ${DIRECTX_INCLUDE_DIR}")
         unset(DIRECTX_INCLUDE_DIRS CACHE)
     else()
         break()
@@ -58,9 +58,9 @@ endif()
 
 set(Lib_FOUND 1)
 foreach(current_lib ${DirectX_LIBRARIES})
-	message(STATUS "current_lib: ${current_lib}")
+	#message(STATUS "current_lib: ${current_lib}")
 	foreach(current_dir ${DX9_SEARCH_LIBRARY_PATHS})
-		message(STATUS "current_dir: ${current_dir}")
+		#message(STATUS "current_dir: ${current_dir}")
 		unset(PATH_LIB CACHE)
         find_library(PATH_LIB
 					NAMES ${current_lib}
@@ -70,7 +70,7 @@ foreach(current_lib ${DirectX_LIBRARIES})
                     NO_CMAKE_PATH
                     NO_CMAKE_SYSTEM_PATH)
         
-        message(STATUS "PATH_LIB: ${PATH_LIB}")
+        #message(STATUS "PATH_LIB: ${PATH_LIB}")
         
         if(${PATH_LIB} STREQUAL "PATH_LIB-NOTFOUND")
             #unset(DIRECTX_LIBRARIES_PATHS)
@@ -78,11 +78,8 @@ foreach(current_lib ${DirectX_LIBRARIES})
             set(DIRECTX_LIBRARIES_PATHS ${DIRECTX_LIBRARIES_PATHS} ${PATH_LIB})
 			break()
         endif()
-        
-        
     endforeach()
-	
-    message(STATUS "")
+    #message(STATUS "")
     #if(DIRECTX_LIBRARIES_PATHS)
     #    break()
     #endif()

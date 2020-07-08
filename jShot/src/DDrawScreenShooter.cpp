@@ -1,22 +1,23 @@
 ﻿#include <iostream>
+#include <vector>
 
 #include "DDrawScreenShooter.h"
 #include "ddraw_decode_error.h"
 
-void CDDrawScreenShooter::GetScreenShot(const CRectangle& _region)
+bool CDDrawScreenShooter::GetScreenShot(const CRectangle& _region, std::vector<char>& _outbuffer)
 {
 	LPDIRECTDRAW lpDDraw;
 	HRESULT hResult = DirectDrawCreate(NULL, &lpDDraw, NULL);
 	if (hResult != DD_OK)
 	{
-		return;
+		return false;
 	}
 
 	HWND desktopHwnd = GetDesktopWindow();
 	hResult = lpDDraw->SetCooperativeLevel(desktopHwnd, DDSCL_NORMAL);
 	if (hResult != DD_OK)
 	{
-		return;
+		return false;
 	}
 
 	DDSURFACEDESC ddsd;
@@ -31,7 +32,7 @@ void CDDrawScreenShooter::GetScreenShot(const CRectangle& _region)
 	if (hResult != DD_OK)
 	{
 		std::cout << "Error: " << decodeCreateSurfaceError(hResult) << std::endl;
-		return;
+		return false;
 	}
 
 	/*
@@ -39,7 +40,7 @@ void CDDrawScreenShooter::GetScreenShot(const CRectangle& _region)
 	hResult = lpPrimarySurface->GetDC(&hDC);
 	if (hResult != DD_OK)
 	{
-		return;
+		return false;
 	}
 	*/
 	RECT rectangle;

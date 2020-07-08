@@ -8,7 +8,7 @@
 class CDDrawScreenShooter
 {
 public:
-	void GetScreenShot(const CRectangle& _region);
+	bool GetScreenShot(const CRectangle& _region, std::vector<char>& _outbuffer);
 };
 
 #endif
