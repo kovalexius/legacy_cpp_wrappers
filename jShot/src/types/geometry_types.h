@@ -9,7 +9,10 @@ public:
 		m_y(_y)
 	{}
 
-	bool operator == (const Vector2& _other);
+	bool operator == (const Vector2& _other)
+	{
+		return (m_x == _other.m_x) && (m_y == _other.m_y);
+	}
 
 	int m_x;
 	int m_y;
@@ -33,8 +36,15 @@ public:
 																			m_bitsPerPixel(_bytesPerPixel*8)
 	{}
 
-	bool operator == (const CRectangle& _other);
-	bool operator != (const CRectangle& _other);
+	bool operator == (const CRectangle& _other)
+	{
+		return (m_leftBottomCorner == _other.m_leftBottomCorner) && (m_size == _other.m_size);
+	}
+
+	bool operator != (const CRectangle& _other)
+	{
+		return !(operator==(_other));
+	}
 
 	Vector2& getSize()
 	{
