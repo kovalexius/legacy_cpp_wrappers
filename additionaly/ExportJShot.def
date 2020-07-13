@@ -1,6 +1,0 @@
-LIBRARY   JSHOT
-EXPORTS
-   getJShot   @1
-   destroyJShot	@2
-   destroyBuffers @3
-   printHelloWorld @4
